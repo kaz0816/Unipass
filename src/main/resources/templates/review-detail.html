@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>レビュー詳細</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container py-4" th:object="${review}">
+    <h1 class="mb-3" th:text="*{courseName}">授業名</h1>
+
+    <p class="text-muted">
+        教員: <span th:text="*{teacherName}"></span> /
+        評価: <span th:text="*{rating}"></span> / 5
+    </p>
+
+    <div class="mb-3" th:if="*{imagePath} != null">
+        <img th:src="*{imagePath}" class="img-fluid rounded">
+    </div>
+
+    <p th:text="*{comment}"></p>
+
+    <hr>
+
+    <h3 class="mt-4 mb-3">コメント</h3>
+
+    <div th:if="${#lists.isEmpty(comments)}" class="alert alert-info">
+        まだコメントはありません。
+    </div>
+
+    <ul class="list-group mb-3" th:if="${!#lists.isEmpty(comments)}">
+        <li class="list-group-item" th:each="c : ${comments}">
+            <strong th:text="${c.user.email}">user</strong> :
+            <span th:text="${c.content}"></span>
+        </li>
+    </ul>
+
+    <form th:action="@{'/reviews/' + ${review.id} + '/comments'}" method="post">
+        <div class="mb-3">
+            <label class="form-label">コメントを書く</label>
+            <textarea name="content" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">送信</button>
+    </form>
+
+    <div class="mt-3">
+        <a href="/reviews" class="btn btn-secondary">← 一覧に戻る</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>マイページ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container py-4">
+    <h1 class="mb-3">マイページ</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title" th:text="${user.university} ?: 'ユーザー情報'"></h5>
+            <p class="card-text mb-1">
+                メール: <span th:text="${user.email}"></span>
+            </p>
+            <p class="card-text">
+                ユーザーID: <span th:text="${user.id}"></span>
+            </p>
+        </div>
+    </div>
+
+    <h2 class="mb-3">自分のレビュー</h2>
+
+    <div th:if="${#lists.isEmpty(reviews)}" class="alert alert-info">
+        まだレビューを投稿していません。
+    </div>
+
+    <div th:if="${!#lists.isEmpty(reviews)}">
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+            <div class="col" th:each="r : ${reviews}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${r.courseName}">授業名</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            教員: <span th:text="${r.teacherName}"></span>
+                        </h6>
+                        <p class="mb-1">
+                            評価: <span th:text="${r.rating}"></span> / 5
+                        </p>
+                        <div class="mb-2" th:if="${r.imagePath != null}">
+                            <img th:src="${r.imagePath}" class="img-fluid rounded">
+                        </div>
+
+                        <p class="card-text" th:text="${r.comment}">コメント</p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <a th:href="@{'/reviews/' + ${r.id} + '/edit'}" class="btn btn-sm btn-outline-secondary">
+                            編集
+                        </a>
+                        <form th:action="@{'/reviews/' + ${r.id} + '/delete'}" method="post" class="m-0">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('本当に削除しますか？');">
+                                削除
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="/reviews" class="btn btn-secondary">← レビュー一覧に戻る</a>
+    </div>
+</div>
+
+</body>
+</html>
