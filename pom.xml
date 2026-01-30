@@ -80,6 +80,15 @@
 			<version>1.28.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-mysql</artifactId>
+		</dependency>
+
 		<!-- すでにある他の dependency の中に追加 -->
 		<dependency>
     		<groupId>org.springframework.boot</groupId>
