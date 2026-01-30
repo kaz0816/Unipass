@@ -33,6 +33,7 @@ public class SecurityConfig {
                 .requestMatchers(
                         "/register",
                         "/login",
+                        "/health",
                         "/css/**",
                         "/js/**"
                 ).permitAll()              // ここは誰でもOK
