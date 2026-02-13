@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>レビュー詳細</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div th:replace="fragments/header :: header"></div>
+
+<div class="container py-4" th:object="${review}">
+    <h1 class="mb-3" th:text="*{courseName}">授業名</h1>
+
+    <p class="text-muted">
+        教員: <span th:text="*{teacherName}"></span> /
+        評価: <span th:text="*{rating}"></span> / 5 /
+        投稿日:
+        <span th:if="${review.createdAt != null}"
+              th:text="${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
+        <span th:if="${review.createdAt == null}">-</span>
+    </p>
+
+    <div class="mb-3" th:if="*{imagePath} != null">
+        <img th:src="*{imagePath}" class="img-fluid rounded">
+    </div>
+
+    <p th:text="*{comment}"></p>
+
+    <hr>
+
+    <h3 class="mt-4 mb-3">コメント</h3>
+
+    <div th:if="${#lists.isEmpty(comments)}" class="alert alert-info">
+        まだコメントはありません。
+    </div>
+
+    <ul class="list-group mb-3" th:if="${!#lists.isEmpty(comments)}">
+        <li class="list-group-item" th:each="c : ${comments}">
+            <strong th:text="${c.user.email}">user</strong> :
+            <span th:text="${c.content}"></span>
+            <span class="text-muted small ms-2" th:if="${c.createdAt != null}"
+                  th:text="${#temporals.format(c.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
+            <span class="text-muted small ms-2" th:if="${c.createdAt == null}">-</span>
+            <div class="text-muted small mt-1">
+                <span th:text="${c.university}">大学</span> /
+                <span th:text="${c.faculty}">学部</span> /
+                <span th:text="${c.department}">学科</span>
+            </div>
+            <ul class="list-group mt-2" th:if="${!#lists.isEmpty(c.replies)}">
+                <li class="list-group-item" th:each="r : ${c.replies}">
+                    <strong th:text="${r.user.email}">user</strong> :
+                    <span th:text="${r.content}"></span>
+                    <span class="text-muted small ms-2" th:if="${r.createdAt != null}"
+                          th:text="${#temporals.format(r.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
+                    <span class="text-muted small ms-2" th:if="${r.createdAt == null}">-</span>
+                    <div class="text-muted small mt-1">
+                        <span th:text="${r.university}">大学</span> /
+                        <span th:text="${r.faculty}">学部</span> /
+                        <span th:text="${r.department}">学科</span>
+                    </div>
+                </li>
+            </ul>
+            <form class="mt-2"
+                  th:action="@{'/reviews/' + ${review.id} + '/comments/' + ${c.id} + '/replies'}"
+                  method="post">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <input type="text" name="university" class="form-control form-control-sm" placeholder="大学" required>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input type="text" name="faculty" class="form-control form-control-sm" placeholder="学部" required>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input type="text" name="department" class="form-control form-control-sm" placeholder="学科" required>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <textarea name="content" class="form-control form-control-sm" rows="2" placeholder="返信を書く" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-sm btn-outline-primary">返信</button>
+            </form>
+        </li>
+    </ul>
+
+    <form th:action="@{'/reviews/' + ${review.id} + '/comments'}" method="post">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <label class="form-label">大学</label>
+                <input type="text" name="university" class="form-control" required>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">学部</label>
+                <input type="text" name="faculty" class="form-control" required>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label class="form-label">学科</label>
+                <input type="text" name="department" class="form-control" required>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">コメントを書く</label>
+            <textarea name="content" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">送信</button>
+    </form>
+
+    <div class="mt-3">
+        <a href="/reviews" class="btn btn-secondary">← 一覧に戻る</a>
+    </div>
+</div>
+
+</body>
+</html>

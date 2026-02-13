@@ -1,0 +1,14 @@
+com/example/demo/ReviewRepository.class
+com/example/demo/Comment.class
+com/example/demo/AuthController.class
+com/example/demo/SecurityConfig.class
+com/example/demo/ReviewService.class
+com/example/demo/DemoApplication.class
+com/example/demo/ReviewApiController.class
+com/example/demo/UserRepository.class
+com/example/demo/CustomUserDetailsService.class
+com/example/demo/CommentRepository.class
+com/example/demo/ReviewController.class
+com/example/demo/WebConfig.class
+com/example/demo/Review.class
+com/example/demo/User.class
