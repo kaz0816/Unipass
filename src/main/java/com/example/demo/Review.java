@@ -19,7 +19,8 @@ public class Review {
 
     private String courseName;
     private String teacherName;
-    private int rating;
+    @Column(nullable = false, precision = 3, scale = 1)
+    private double rating;
     private String comment;
 
     @Column
@@ -33,7 +34,7 @@ public class Review {
     public Review() {
     }
 
-    public Review(String courseName, String teacherName, int rating, String comment) {
+    public Review(String courseName, String teacherName, double rating, String comment) {
         this.courseName = courseName;
         this.teacherName = teacherName;
         this.rating = rating;
@@ -52,7 +53,7 @@ public class Review {
         return teacherName;
     }
 
-    public int getRating() {
+    public double getRating() {
         return rating;
     }
 
@@ -76,7 +77,7 @@ public class Review {
         this.teacherName = teacherName;
     }
 
-    public void setRating(int rating) {
+    public void setRating(double rating) {
         this.rating = rating;
     }
 

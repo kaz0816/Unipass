@@ -41,12 +41,21 @@ public class ReviewController {
             @RequestParam(name = "sort", defaultValue = "recent") String sort,
             Model model
     ) {
-        List<Review> reviews = service.search(keyword, target, sort);
+        String trimmedKeyword = keyword == null ? "" : keyword.trim();
+        boolean hasSearched = !trimmedKeyword.isEmpty();
+        List<Review> reviews = hasSearched ? service.search(trimmedKeyword, target, sort) : List.of();
+
+        if (hasSearched && ("course".equals(target) || "teacher".equals(target))) {
+            ReviewService.RatingSummary ratingSummary = service.buildRatingSummary(reviews);
+            model.addAttribute("ratingSummary", ratingSummary);
+            model.addAttribute("summaryTitle", ("course".equals(target) ? "授業名" : "教員名") + "「" + trimmedKeyword + "」の評価");
+        }
 
         model.addAttribute("reviews", reviews);
-        model.addAttribute("keyword", keyword);
+        model.addAttribute("keyword", trimmedKeyword);
         model.addAttribute("target", target);
         model.addAttribute("sort", sort);
+        model.addAttribute("hasSearched", hasSearched);
 
         return "reviews";
     }
@@ -64,13 +73,13 @@ public class ReviewController {
     public String addReview(
             @RequestParam String courseName,
             @RequestParam String teacherName,
-            @RequestParam int rating,
+            @RequestParam double rating,
             @RequestParam String comment,
             @RequestParam(name = "imageFile", required = false) MultipartFile imageFile
     ) {
         User user = getCurrentUser();
 
-        Review review = new Review(courseName, teacherName, rating, comment);
+        Review review = new Review(courseName, teacherName, normalizeRating(rating), comment);
         review.setUser(user);
 
         // ★ 画像があれば保存。エラーが出てもレビューは保存する。
@@ -115,7 +124,7 @@ public class ReviewController {
             @PathVariable Integer id,
             @RequestParam String courseName,
             @RequestParam String teacherName,
-            @RequestParam int rating,
+            @RequestParam double rating,
             @RequestParam String comment,
             @RequestParam(name = "imageFile", required = false) MultipartFile imageFile
     ) throws IOException {
@@ -129,7 +138,7 @@ public class ReviewController {
 
         review.setCourseName(courseName);
         review.setTeacherName(teacherName);
-        review.setRating(rating);
+        review.setRating(normalizeRating(rating));
         review.setComment(comment);
 
         // 画像が送られてきたときだけ更新
@@ -245,6 +254,11 @@ public class ReviewController {
         model.addAttribute("reviews", service.getByTeacherName(name));
         model.addAttribute("filterTitle", "教員: " + name);
         return "reviews-filter";
+    }
+
+    private double normalizeRating(double rawRating) {
+        double clamped = Math.max(0.5, Math.min(5.0, rawRating));
+        return Math.round(clamped * 2.0) / 2.0;
     }
 
 }

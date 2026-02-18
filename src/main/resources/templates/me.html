@@ -46,7 +46,7 @@
                             <span th:if="${r.createdAt == null}">-</span>
                         </div>
                         <p class="mb-1">
-                            評価: <span th:text="${r.rating}"></span> / 5
+                            評価: <span th:text="${#numbers.formatDecimal(r.rating, 1, 1)}"></span> / 5.0
                         </p>
                         <div class="mb-2" th:if="${r.imagePath != null}">
                             <img th:src="${r.imagePath}" class="img-fluid rounded">

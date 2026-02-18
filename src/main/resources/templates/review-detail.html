@@ -14,7 +14,7 @@
 
     <p class="text-muted">
         教員: <span th:text="*{teacherName}"></span> /
-        評価: <span th:text="*{rating}"></span> / 5 /
+        評価: <span th:text="${#numbers.formatDecimal(review.rating, 1, 1)}"></span> / 5.0 /
         投稿日:
         <span th:if="${review.createdAt != null}"
               th:text="${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
