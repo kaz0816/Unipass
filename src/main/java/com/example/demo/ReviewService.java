@@ -1,24 +1,29 @@
 package com.example.demo;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.List;
-
-import org.springframework.data.domain.PageRequest;
+import java.util.Locale;
 import org.springframework.data.domain.Sort;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ReviewService {
 
+    private static final int SUGGEST_LIMIT = 8;
+
     private final ReviewRepository repository;
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
+    private final List<String> passnaviSchoolNames;
 
     public ReviewService(ReviewRepository repository,
                          CommentRepository commentRepository,
-                         UserRepository userRepository) {
+                         ObjectMapper objectMapper) {
         this.repository = repository;
         this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
+        this.passnaviSchoolNames = loadPassnaviSchoolNames(objectMapper);
     }
 
     // =========================
@@ -150,14 +155,29 @@ public class ReviewService {
             return List.of();
         }
 
-        List<String> prefixMatches = userRepository.suggestUniversitiesByPrefix(
-                normalized, PageRequest.of(0, 8));
+        String lowerQuery = normalized.toLowerCase(Locale.ROOT);
+        List<String> prefixMatches = passnaviSchoolNames.stream()
+                .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(lowerQuery))
+                .limit(SUGGEST_LIMIT)
+                .toList();
 
         if (!prefixMatches.isEmpty()) {
             return prefixMatches;
         }
 
-        return userRepository.suggestUniversitiesByContains(normalized, PageRequest.of(0, 8));
+        return passnaviSchoolNames.stream()
+                .filter(name -> name.toLowerCase(Locale.ROOT).contains(lowerQuery))
+                .limit(SUGGEST_LIMIT)
+                .toList();
+    }
+
+    private List<String> loadPassnaviSchoolNames(ObjectMapper objectMapper) {
+        try {
+            ClassPathResource resource = new ClassPathResource("passnavi_schools.json");
+            return objectMapper.readValue(resource.getInputStream(), new TypeReference<List<String>>() {});
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to load passnavi_schools.json", e);
+        }
     }
 
 }

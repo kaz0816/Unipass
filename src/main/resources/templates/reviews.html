@@ -26,7 +26,7 @@
         <div class="col-md-4 position-relative">
             <label class="form-label mb-1">キーワード</label>
             <input id="keywordInput" type="text" name="keyword" class="form-control"
-                   placeholder="授業名・教員名・大学名"
+                   placeholder="授業名・教員名・学校名"
                    autocomplete="off"
                    th:value="${keyword}">
             <div id="universitySuggestBox" class="list-group suggest-box d-none"></div>
@@ -37,7 +37,7 @@
                 <option value="all" th:selected="${target} == 'all'">授業名＋教員名＋大学名</option>
                 <option value="course" th:selected="${target} == 'course'">授業名のみ</option>
                 <option value="teacher" th:selected="${target} == 'teacher'">教員名のみ</option>
-                <option value="university" th:selected="${target} == 'university'">大学名のみ</option>
+                <option value="university" th:selected="${target} == 'university'">学校名のみ</option>
             </select>
         </div>
         <div class="col-md-3">
@@ -150,10 +150,10 @@
         if (!keywordInput || !targetSelect || !suggestBox) return;
 
         const placeholderMap = {
-            all: "授業名・教員名・大学名",
+            all: "授業名・教員名・学校名",
             course: "授業名",
             teacher: "教員名",
-            university: "大学名（例: 明治大学）"
+            university: "学校名（例: 明治大学）"
         };
 
         let debounceTimer = null;
