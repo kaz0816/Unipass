@@ -28,6 +28,12 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
+    <!-- Server-side template rendering -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
+    </dependency>
+
     <!-- JPA (Entity / JpaRepository / Sort など) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -52,6 +58,13 @@
       <groupId>com.google.cloud.sql</groupId>
       <artifactId>mysql-socket-factory-connector-j-8</artifactId>
       <version>1.19.1</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- Fallback DB for Cloud Run quick verification (no Cloud SQL vars) -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
       <scope>runtime</scope>
     </dependency>
 
