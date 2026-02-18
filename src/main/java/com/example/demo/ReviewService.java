@@ -47,11 +47,12 @@ public class ReviewService {
             case "teacher":
                 return repository.findByTeacherNameContainingIgnoreCase(keyword, sort);
             case "university":
-                return repository.findByUniversityContainingIgnoreCase(keyword, sort);
+                return repository.findByUniversityContainingIgnoreCaseOrUser_UniversityContainingIgnoreCase(
+                        keyword, keyword, sort);
             default: // all
                 return repository
-                        .findByCourseNameContainingIgnoreCaseOrTeacherNameContainingIgnoreCaseOrUniversityContainingIgnoreCase(
-                                keyword, keyword, keyword, sort);
+                        .findByCourseNameContainingIgnoreCaseOrTeacherNameContainingIgnoreCaseOrUniversityContainingIgnoreCaseOrUser_UniversityContainingIgnoreCase(
+                                keyword, keyword, keyword, keyword, sort);
         }
     }
 

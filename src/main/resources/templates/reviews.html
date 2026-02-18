@@ -115,12 +115,15 @@
                                th:text="${r.courseName}">授業名</a>
                         </h5>
 
-                        <div class="small mb-1" th:if="${r.university != null and !#strings.isEmpty(r.university)}">
+                        <div class="small mb-1"
+                             th:with="displayUniversity=${(r.university != null and !#strings.isEmpty(r.university)) ? r.university : (r.user != null ? r.user.university : null)}"
+                             th:if="${displayUniversity != null and !#strings.isEmpty(displayUniversity)}">
                             対象大学:
-                            <a th:href="@{/reviews/search(target='university', keyword=${r.university}, sort='recent')}"
-                               th:text="${r.university}">大学名</a>
+                            <a th:href="@{/reviews/search(target='university', keyword=${displayUniversity}, sort='recent')}"
+                               th:text="${displayUniversity}">大学名</a>
                         </div>
-                        <div class="small mb-1 text-muted" th:if="${r.university == null or #strings.isEmpty(r.university)}">
+                        <div class="small mb-1 text-muted"
+                             th:if="${(r.university == null or #strings.isEmpty(r.university)) and (r.user == null or r.user.university == null or #strings.isEmpty(r.user.university))}">
                             対象大学: -
                         </div>
 

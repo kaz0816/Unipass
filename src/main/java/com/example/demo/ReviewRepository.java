@@ -25,12 +25,17 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
             Sort sort
     );
 
-    List<Review> findByUniversityContainingIgnoreCase(String keyword, Sort sort);
+    List<Review> findByUniversityContainingIgnoreCaseOrUser_UniversityContainingIgnoreCase(
+            String reviewUniversityKeyword,
+            String userUniversityKeyword,
+            Sort sort
+    );
 
-    List<Review> findByCourseNameContainingIgnoreCaseOrTeacherNameContainingIgnoreCaseOrUniversityContainingIgnoreCase(
+    List<Review> findByCourseNameContainingIgnoreCaseOrTeacherNameContainingIgnoreCaseOrUniversityContainingIgnoreCaseOrUser_UniversityContainingIgnoreCase(
             String courseKeyword,
             String teacherKeyword,
             String universityKeyword,
+            String userUniversityKeyword,
             Sort sort
     );
 
