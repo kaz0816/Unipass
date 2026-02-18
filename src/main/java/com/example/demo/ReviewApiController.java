@@ -33,6 +33,11 @@ public class ReviewApiController {
         return service.getById(id);
     }
 
+    @GetMapping("/universities/suggest")
+    public List<String> suggestUniversities(@RequestParam(name = "q", required = false) String query) {
+        return service.suggestUniversities(query);
+    }
+
     // 削除
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {

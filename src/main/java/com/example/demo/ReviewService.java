@@ -2,6 +2,7 @@ package com.example.demo;
 
 import java.util.List;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -10,11 +11,14 @@ public class ReviewService {
 
     private final ReviewRepository repository;
     private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
 
     public ReviewService(ReviewRepository repository,
-                         CommentRepository commentRepository) {
+                         CommentRepository commentRepository,
+                         UserRepository userRepository) {
         this.repository = repository;
         this.commentRepository = commentRepository;
+        this.userRepository = userRepository;
     }
 
     // =========================
@@ -34,10 +38,12 @@ public class ReviewService {
                 return repository.findByCourseNameContainingIgnoreCase(keyword, sort);
             case "teacher":
                 return repository.findByTeacherNameContainingIgnoreCase(keyword, sort);
+            case "university":
+                return repository.findByUser_UniversityContainingIgnoreCase(keyword, sort);
             default: // all
                 return repository
-                        .findByCourseNameContainingIgnoreCaseOrTeacherNameContainingIgnoreCase(
-                                keyword, keyword, sort);
+                        .findByCourseNameContainingIgnoreCaseOrTeacherNameContainingIgnoreCaseOrUser_UniversityContainingIgnoreCase(
+                                keyword, keyword, keyword, sort);
         }
     }
 
@@ -132,6 +138,26 @@ public class ReviewService {
     }
     public List<Review> getAll() {
         return repository.findAll();
+    }
+
+    public List<String> suggestUniversities(String query) {
+        if (query == null) {
+            return List.of();
+        }
+
+        String normalized = query.trim();
+        if (normalized.isEmpty()) {
+            return List.of();
+        }
+
+        List<String> prefixMatches = userRepository.suggestUniversitiesByPrefix(
+                normalized, PageRequest.of(0, 8));
+
+        if (!prefixMatches.isEmpty()) {
+            return prefixMatches;
+        }
+
+        return userRepository.suggestUniversitiesByContains(normalized, PageRequest.of(0, 8));
     }
 
 }
