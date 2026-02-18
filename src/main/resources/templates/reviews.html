@@ -38,9 +38,9 @@
 <div th:replace="fragments/header :: header"></div>
 
 <div class="container py-4">
-    <h1 class="mb-4">授業レビュー検索</h1>
+    <h1 class="mb-4">検索結果</h1>
 
-    <form action="/reviews" method="get" class="row g-2 align-items-end mb-4">
+    <form action="/reviews/search" method="get" class="row g-2 align-items-end mb-4">
         <div class="col-md-4 position-relative">
             <label class="form-label mb-1">キーワード</label>
             <input id="keywordInput" type="text" name="keyword" class="form-control"
@@ -123,7 +123,7 @@
                         <div class="small text-muted mb-2"
                              th:if="${r.user != null and r.user.university != null and !#strings.isEmpty(r.user.university)}">
                             投稿者大学:
-                            <a th:href="@{/reviews(target='university', keyword=${r.user.university}, sort='recent')}"
+                            <a th:href="@{/reviews/search(target='university', keyword=${r.user.university}, sort='recent')}"
                                th:text="${r.user.university}">大学名</a>
                         </div>
 

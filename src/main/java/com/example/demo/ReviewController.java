@@ -33,8 +33,14 @@ public class ReviewController {
                 .orElseThrow(() -> new RuntimeException("User not found: " + email));
     }
 
-    // 一覧表示
+    // 最初の検索画面（検索欄のみ）
     @GetMapping("/reviews")
+    public String showSearchHome() {
+        return "reviews-home";
+    }
+
+    // 検索結果画面
+    @GetMapping("/reviews/search")
     public String listReviews(
             @RequestParam(name = "keyword", required = false) String keyword,
             @RequestParam(name = "target", defaultValue = "all") String target,
@@ -42,6 +48,10 @@ public class ReviewController {
             Model model
     ) {
         String trimmedKeyword = keyword == null ? "" : keyword.trim();
+        if (trimmedKeyword.isEmpty()) {
+            return "redirect:/reviews";
+        }
+
         boolean hasSearched = !trimmedKeyword.isEmpty();
         List<Review> reviews = hasSearched ? service.search(trimmedKeyword, target, sort) : List.of();
 
