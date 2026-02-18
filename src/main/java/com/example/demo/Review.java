@@ -19,7 +19,6 @@ public class Review {
 
     private String courseName;
     private String teacherName;
-    @Column(nullable = false, precision = 3, scale = 1)
     private double rating;
     private String comment;
 
