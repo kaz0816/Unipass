@@ -13,9 +13,11 @@
     <h1 class="mb-3" th:text="*{courseName}">授業名</h1>
 
     <p class="text-muted">
+        対象大学:
+        <span th:text="*{university}">大学名</span> /
         教員: <span th:text="*{teacherName}"></span> /
         評価: <span th:text="${#numbers.formatDecimal(review.rating, 1, 1)}"></span> / 5.0 /
-        投稿日:
+        口コミ投稿日:
         <span th:if="${review.createdAt != null}"
               th:text="${#temporals.format(review.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
         <span th:if="${review.createdAt == null}">-</span>
@@ -37,7 +39,7 @@
 
     <ul class="list-group mb-3" th:if="${!#lists.isEmpty(comments)}">
         <li class="list-group-item" th:each="c : ${comments}">
-            <strong th:text="${c.user.email}">user</strong> :
+            <strong th:text="${(c.user != null and c.user.nickname != null and !#strings.isEmpty(c.user.nickname)) ? c.user.nickname : 'ユーザー'}">user</strong> :
             <span th:text="${c.content}"></span>
             <span class="text-muted small ms-2" th:if="${c.createdAt != null}"
                   th:text="${#temporals.format(c.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
@@ -49,7 +51,7 @@
             </div>
             <ul class="list-group mt-2" th:if="${!#lists.isEmpty(c.replies)}">
                 <li class="list-group-item" th:each="r : ${c.replies}">
-                    <strong th:text="${r.user.email}">user</strong> :
+                    <strong th:text="${(r.user != null and r.user.nickname != null and !#strings.isEmpty(r.user.nickname)) ? r.user.nickname : 'ユーザー'}">user</strong> :
                     <span th:text="${r.content}"></span>
                     <span class="text-muted small ms-2" th:if="${r.createdAt != null}"
                           th:text="${#temporals.format(r.createdAt, 'yyyy/MM/dd HH:mm')}"></span>

@@ -1,6 +1,8 @@
 package com.example.demo;
 
 import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +56,13 @@ public class ReviewController {
 
         boolean hasSearched = !trimmedKeyword.isEmpty();
         List<Review> reviews = hasSearched ? service.search(trimmedKeyword, target, sort) : List.of();
+        Map<Integer, List<Comment>> reviewCommentsMap = new LinkedHashMap<>();
+        if (hasSearched) {
+            for (Review review : reviews) {
+                List<Comment> comments = service.getComments(review);
+                reviewCommentsMap.put(review.getId(), comments.stream().limit(5).toList());
+            }
+        }
 
         if (hasSearched && ("course".equals(target) || "teacher".equals(target))) {
             ReviewService.RatingSummary ratingSummary = service.buildRatingSummary(reviews);
@@ -62,6 +71,7 @@ public class ReviewController {
         }
 
         model.addAttribute("reviews", reviews);
+        model.addAttribute("reviewCommentsMap", reviewCommentsMap);
         model.addAttribute("keyword", trimmedKeyword);
         model.addAttribute("target", target);
         model.addAttribute("sort", sort);
@@ -83,13 +93,13 @@ public class ReviewController {
     public String addReview(
             @RequestParam String courseName,
             @RequestParam String teacherName,
-            @RequestParam double rating,
+            @RequestParam int rating,
             @RequestParam String comment,
             @RequestParam(name = "imageFile", required = false) MultipartFile imageFile
     ) {
         User user = getCurrentUser();
 
-        Review review = new Review(courseName, teacherName, normalizeRating(rating), comment);
+        Review review = new Review(courseName, teacherName, user.getUniversity(), normalizeRating(rating), comment);
         review.setUser(user);
 
         // ★ 画像があれば保存。エラーが出てもレビューは保存する。
@@ -134,7 +144,7 @@ public class ReviewController {
             @PathVariable Integer id,
             @RequestParam String courseName,
             @RequestParam String teacherName,
-            @RequestParam double rating,
+            @RequestParam int rating,
             @RequestParam String comment,
             @RequestParam(name = "imageFile", required = false) MultipartFile imageFile
     ) throws IOException {
@@ -148,6 +158,7 @@ public class ReviewController {
 
         review.setCourseName(courseName);
         review.setTeacherName(teacherName);
+        review.setUniversity(current.getUniversity());
         review.setRating(normalizeRating(rating));
         review.setComment(comment);
 
@@ -266,9 +277,9 @@ public class ReviewController {
         return "reviews-filter";
     }
 
-    private double normalizeRating(double rawRating) {
-        double clamped = Math.max(0.5, Math.min(5.0, rawRating));
-        return Math.round(clamped * 2.0) / 2.0;
+    private double normalizeRating(int rawRating) {
+        int clamped = Math.max(1, Math.min(5, rawRating));
+        return clamped;
     }
 
 }

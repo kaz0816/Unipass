@@ -47,10 +47,10 @@ public class ReviewService {
             case "teacher":
                 return repository.findByTeacherNameContainingIgnoreCase(keyword, sort);
             case "university":
-                return repository.findByUser_UniversityContainingIgnoreCase(keyword, sort);
+                return repository.findByUniversityContainingIgnoreCase(keyword, sort);
             default: // all
                 return repository
-                        .findByCourseNameContainingIgnoreCaseOrTeacherNameContainingIgnoreCaseOrUser_UniversityContainingIgnoreCase(
+                        .findByCourseNameContainingIgnoreCaseOrTeacherNameContainingIgnoreCaseOrUniversityContainingIgnoreCase(
                                 keyword, keyword, keyword, sort);
         }
     }
@@ -112,33 +112,37 @@ public class ReviewService {
             return new RatingSummary(0, 0, List.of());
         }
 
-        Map<Double, Long> counter = new LinkedHashMap<>();
-        for (double score = 5.0; score >= 0.5; score -= 0.5) {
+        Map<Integer, Long> counter = new LinkedHashMap<>();
+        for (int score = 5; score >= 1; score--) {
             counter.put(score, 0L);
         }
 
         double sum = 0;
         for (Review review : reviews) {
-            double normalized = normalizeRating(review.getRating());
-            sum += normalized;
-            counter.computeIfPresent(normalized, (k, v) -> v + 1);
+            sum += review.getRating();
+            int star = normalizeStar(review.getRating());
+            counter.computeIfPresent(star, (k, v) -> v + 1);
         }
 
         long total = reviews.size();
         List<RatingBreakdown> breakdowns = new ArrayList<>();
-        for (Map.Entry<Double, Long> entry : counter.entrySet()) {
+        for (Map.Entry<Integer, Long> entry : counter.entrySet()) {
             long count = entry.getValue();
             double percentage = total == 0 ? 0 : (count * 100.0) / total;
             breakdowns.add(new RatingBreakdown(entry.getKey(), count, percentage));
         }
 
-        double average = sum / total;
+        double average = normalizeHalf(sum / total);
         return new RatingSummary(average, total, breakdowns);
     }
 
-    private double normalizeRating(double rating) {
-        double clamped = Math.max(0.5, Math.min(5.0, rating));
-        return Math.round(clamped * 2.0) / 2.0;
+    private int normalizeStar(double rating) {
+        int rounded = (int) Math.round(rating);
+        return Math.max(1, Math.min(5, rounded));
+    }
+
+    private double normalizeHalf(double rating) {
+        return Math.round(rating * 2.0) / 2.0;
     }
 
     public static class RatingSummary {
@@ -166,17 +170,17 @@ public class ReviewService {
     }
 
     public static class RatingBreakdown {
-        private final double rating;
+        private final int rating;
         private final long count;
         private final double percentage;
 
-        public RatingBreakdown(double rating, long count, double percentage) {
+        public RatingBreakdown(int rating, long count, double percentage) {
             this.rating = rating;
             this.count = count;
             this.percentage = percentage;
         }
 
-        public double getRating() {
+        public int getRating() {
             return rating;
         }
 

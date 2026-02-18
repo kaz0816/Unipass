@@ -36,8 +36,19 @@ public class AuthController {
     public String register(
             @RequestParam String email,
             @RequestParam String password,
+            @RequestParam String nickname,
             @RequestParam String university,
             Model model) {
+        String trimmedNickname = nickname == null ? "" : nickname.trim();
+        if (trimmedNickname.isEmpty()) {
+            model.addAttribute("error", "ニックネームは必須です。");
+            return "register";
+        }
+
+        if (trimmedNickname.length() > 40) {
+            model.addAttribute("error", "ニックネームは40文字以内で入力してください。");
+            return "register";
+        }
 
         // ① すでに登録済みメールならNG
         if (userRepository.findByEmail(email).isPresent()) {
@@ -49,7 +60,7 @@ public class AuthController {
         String encoded = passwordEncoder.encode(password);
 
         // ROLE_STUDENT で保存
-        User user = new User(email, encoded, "ROLE_STUDENT", university);
+        User user = new User(email, encoded, "ROLE_STUDENT", trimmedNickname, university);
         userRepository.save(user);
 
         // 登録後はログインページへ

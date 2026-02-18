@@ -19,6 +19,7 @@ public class Review {
 
     private String courseName;
     private String teacherName;
+    private String university;
     private double rating;
     private String comment;
 
@@ -33,9 +34,10 @@ public class Review {
     public Review() {
     }
 
-    public Review(String courseName, String teacherName, double rating, String comment) {
+    public Review(String courseName, String teacherName, String university, double rating, String comment) {
         this.courseName = courseName;
         this.teacherName = teacherName;
+        this.university = university;
         this.rating = rating;
         this.comment = comment;
     }
@@ -50,6 +52,10 @@ public class Review {
 
     public String getTeacherName() {
         return teacherName;
+    }
+
+    public String getUniversity() {
+        return university;
     }
 
     public double getRating() {
@@ -74,6 +80,10 @@ public class Review {
 
     public void setTeacherName(String teacherName) {
         this.teacherName = teacherName;
+    }
+
+    public void setUniversity(String university) {
+        this.university = university;
     }
 
     public void setRating(double rating) {

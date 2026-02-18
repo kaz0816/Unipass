@@ -14,7 +14,10 @@
 
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title" th:text="${user.university} ?: 'ユーザー情報'"></h5>
+            <h5 class="card-title" th:text="${user.nickname} ?: 'ユーザー情報'"></h5>
+            <p class="card-text mb-1">
+                大学: <span th:text="${user.university} ?: '-'"></span>
+            </p>
             <p class="card-text mb-1">
                 メール: <span th:text="${user.email}"></span>
             </p>
@@ -40,11 +43,14 @@
                             教員: <span th:text="${r.teacherName}"></span>
                         </h6>
                         <div class="text-muted small mb-2">
-                            投稿日:
+                            口コミ投稿日:
                             <span th:if="${r.createdAt != null}"
                                   th:text="${#temporals.format(r.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
                             <span th:if="${r.createdAt == null}">-</span>
                         </div>
+                        <p class="mb-1">
+                            対象大学: <span th:text="${r.university} ?: '-'"></span>
+                        </p>
                         <p class="mb-1">
                             評価: <span th:text="${#numbers.formatDecimal(r.rating, 1, 1)}"></span> / 5.0
                         </p>

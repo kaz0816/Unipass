@@ -20,15 +20,19 @@ public class User {
     @Column(nullable = false)
     private String role;      // "ROLE_STUDENT" など
 
+    @Column(length = 40)
+    private String nickname;
+
     private String university; // 任意：大学名
 
     public User() {
     }
 
-    public User(String email, String password, String role, String university) {
+    public User(String email, String password, String role, String nickname, String university) {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.nickname = nickname;
         this.university = university;
     }
 
@@ -36,10 +40,12 @@ public class User {
     public String getEmail() { return email; }
     public String getPassword() { return password; }
     public String getRole() { return role; }
+    public String getNickname() { return nickname; }
     public String getUniversity() { return university; }
 
     public void setEmail(String email) { this.email = email; }
     public void setPassword(String password) { this.password = password; }
     public void setRole(String role) { this.role = role; }
+    public void setNickname(String nickname) { this.nickname = nickname; }
     public void setUniversity(String university) { this.university = university; }
 }
