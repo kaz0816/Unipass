@@ -16,6 +16,8 @@
         対象大学:
         <span th:text="${(review.university != null and !#strings.isEmpty(review.university)) ? review.university : (review.user != null ? review.user.university : '-')}">大学名</span> /
         教員: <span th:text="*{teacherName}"></span> /
+        テスト方式: <span th:text="${review.testMethod != null and !#strings.isEmpty(review.testMethod) ? review.testMethod : '-'}"></span> /
+        出席の取り方: <span th:text="${review.attendanceMethod != null and !#strings.isEmpty(review.attendanceMethod) ? review.attendanceMethod : '-'}"></span> /
         評価: <span th:text="${#numbers.formatDecimal(review.rating, 1, 1)}"></span> / 5.0 /
         口コミ投稿日:
         <span th:if="${review.createdAt != null}"

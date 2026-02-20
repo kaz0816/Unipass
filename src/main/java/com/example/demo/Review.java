@@ -20,6 +20,8 @@ public class Review {
     private String courseName;
     private String teacherName;
     private String university;
+    private String testMethod;
+    private String attendanceMethod;
     private double rating;
     private String comment;
 
@@ -34,10 +36,14 @@ public class Review {
     public Review() {
     }
 
-    public Review(String courseName, String teacherName, String university, double rating, String comment) {
+    public Review(String courseName, String teacherName, String university,
+                  String testMethod, String attendanceMethod,
+                  double rating, String comment) {
         this.courseName = courseName;
         this.teacherName = teacherName;
         this.university = university;
+        this.testMethod = testMethod;
+        this.attendanceMethod = attendanceMethod;
         this.rating = rating;
         this.comment = comment;
     }
@@ -56,6 +62,14 @@ public class Review {
 
     public String getUniversity() {
         return university;
+    }
+
+    public String getTestMethod() {
+        return testMethod;
+    }
+
+    public String getAttendanceMethod() {
+        return attendanceMethod;
     }
 
     public double getRating() {
@@ -84,6 +98,14 @@ public class Review {
 
     public void setUniversity(String university) {
         this.university = university;
+    }
+
+    public void setTestMethod(String testMethod) {
+        this.testMethod = testMethod;
+    }
+
+    public void setAttendanceMethod(String attendanceMethod) {
+        this.attendanceMethod = attendanceMethod;
     }
 
     public void setRating(double rating) {

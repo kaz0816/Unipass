@@ -50,6 +50,20 @@
         </div>
 
         <div class="mb-3">
+            <label class="form-label">テスト方式</label>
+            <input type="text" name="testMethod" class="form-control"
+                   th:value="${review.testMethod}"
+                   placeholder="例: 期末試験 / レポート / 小テスト" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">出席の取り方</label>
+            <input type="text" name="attendanceMethod" class="form-control"
+                   th:value="${review.attendanceMethod}"
+                   placeholder="例: 毎回点呼 / ICカード / なし" required>
+        </div>
+
+        <div class="mb-3">
             <label class="form-label d-block">評価（星をタップ）</label>
             <div class="star-rating">
                 <input type="radio" id="edit-star5" name="rating" value="5" th:checked="${review.rating >= 4.5}" required>

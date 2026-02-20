@@ -131,6 +131,14 @@
                             教員:
                             <span th:text="${r.teacherName}">先生</span>
                         </h6>
+                        <p class="mb-1 small">
+                            テスト方式:
+                            <span th:text="${r.testMethod != null and !#strings.isEmpty(r.testMethod) ? r.testMethod : '-'}">-</span>
+                        </p>
+                        <p class="mb-2 small">
+                            出席の取り方:
+                            <span th:text="${r.attendanceMethod != null and !#strings.isEmpty(r.attendanceMethod) ? r.attendanceMethod : '-'}">-</span>
+                        </p>
 
                         <div class="small text-muted mb-2"
                              th:if="${r.user != null}">
@@ -203,7 +211,8 @@
                             </button>
                         </form>
 
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2"
+                             th:if="${r.user != null and currentUserId != null and r.user.id == currentUserId}">
                             <a th:href="@{'/reviews/' + ${r.id} + '/edit'}"
                                class="btn btn-sm btn-outline-secondary">
                                 編集

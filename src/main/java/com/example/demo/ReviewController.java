@@ -49,6 +49,7 @@ public class ReviewController {
             @RequestParam(name = "sort", defaultValue = "recent") String sort,
             Model model
     ) {
+        User current = getCurrentUser();
         String trimmedKeyword = keyword == null ? "" : keyword.trim();
         if (trimmedKeyword.isEmpty()) {
             return "redirect:/reviews";
@@ -76,6 +77,7 @@ public class ReviewController {
         model.addAttribute("target", target);
         model.addAttribute("sort", sort);
         model.addAttribute("hasSearched", hasSearched);
+        model.addAttribute("currentUserId", current.getId());
 
         return "reviews";
     }
@@ -93,13 +95,17 @@ public class ReviewController {
     public String addReview(
             @RequestParam String courseName,
             @RequestParam String teacherName,
+            @RequestParam String testMethod,
+            @RequestParam String attendanceMethod,
             @RequestParam int rating,
             @RequestParam String comment,
             @RequestParam(name = "imageFile", required = false) MultipartFile imageFile
     ) {
         User user = getCurrentUser();
 
-        Review review = new Review(courseName, teacherName, user.getUniversity(), normalizeRating(rating), comment);
+        Review review = new Review(courseName, teacherName, user.getUniversity(),
+                testMethod, attendanceMethod,
+                normalizeRating(rating), comment);
         review.setUser(user);
 
         // ★ 画像があれば保存。エラーが出てもレビューは保存する。
@@ -123,7 +129,7 @@ public class ReviewController {
         User current = getCurrentUser();
         Review review = service.getById(id);
 
-        if (!review.getUser().getId().equals(current.getId())) {
+        if (!isOwner(review, current)) {
             return "redirect:/reviews?forbidden";
         }
 
@@ -133,7 +139,11 @@ public class ReviewController {
     // 編集フォーム表示
     @GetMapping("/reviews/{id}/edit")
     public String showEditForm(@PathVariable Integer id, Model model) {
+        User current = getCurrentUser();
         Review review = service.getById(id);
+        if (!isOwner(review, current)) {
+            return "redirect:/reviews?forbidden";
+        }
         model.addAttribute("review", review);
         return "edit";
     }
@@ -144,6 +154,8 @@ public class ReviewController {
             @PathVariable Integer id,
             @RequestParam String courseName,
             @RequestParam String teacherName,
+            @RequestParam String testMethod,
+            @RequestParam String attendanceMethod,
             @RequestParam int rating,
             @RequestParam String comment,
             @RequestParam(name = "imageFile", required = false) MultipartFile imageFile
@@ -152,13 +164,15 @@ public class ReviewController {
         User current = getCurrentUser();
         Review review = service.getById(id);
 
-        if (!review.getUser().getId().equals(current.getId())) {
+        if (!isOwner(review, current)) {
             return "redirect:/reviews?forbidden";
         }
 
         review.setCourseName(courseName);
         review.setTeacherName(teacherName);
         review.setUniversity(current.getUniversity());
+        review.setTestMethod(testMethod);
+        review.setAttendanceMethod(attendanceMethod);
         review.setRating(normalizeRating(rating));
         review.setComment(comment);
 
@@ -265,16 +279,27 @@ public class ReviewController {
     }
     @GetMapping("/reviews/by-course")
     public String byCourse(@RequestParam String name, Model model) {
+        User current = getCurrentUser();
         model.addAttribute("reviews", service.getByCourseName(name));
         model.addAttribute("filterTitle", "授業名: " + name);
+        model.addAttribute("currentUserId", current.getId());
         return "reviews-filter";
     }
 
     @GetMapping("/reviews/by-teacher")
     public String byTeacher(@RequestParam String name, Model model) {
+        User current = getCurrentUser();
         model.addAttribute("reviews", service.getByTeacherName(name));
         model.addAttribute("filterTitle", "教員: " + name);
+        model.addAttribute("currentUserId", current.getId());
         return "reviews-filter";
+    }
+
+    private boolean isOwner(Review review, User current) {
+        return review != null
+                && review.getUser() != null
+                && review.getUser().getId() != null
+                && review.getUser().getId().equals(current.getId());
     }
 
     private double normalizeRating(int rawRating) {

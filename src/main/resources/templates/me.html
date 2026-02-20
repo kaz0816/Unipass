@@ -52,6 +52,12 @@
                             対象大学: <span th:text="${(r.university != null and !#strings.isEmpty(r.university)) ? r.university : (r.user != null ? r.user.university : '-')}"></span>
                         </p>
                         <p class="mb-1">
+                            テスト方式: <span th:text="${r.testMethod != null and !#strings.isEmpty(r.testMethod) ? r.testMethod : '-'}"></span>
+                        </p>
+                        <p class="mb-1">
+                            出席の取り方: <span th:text="${r.attendanceMethod != null and !#strings.isEmpty(r.attendanceMethod) ? r.attendanceMethod : '-'}"></span>
+                        </p>
+                        <p class="mb-1">
                             評価: <span th:text="${#numbers.formatDecimal(r.rating, 1, 1)}"></span> / 5.0
                         </p>
                         <div class="mb-2" th:if="${r.imagePath != null}">
