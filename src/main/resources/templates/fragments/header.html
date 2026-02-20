@@ -4,19 +4,46 @@
 <head>
     <meta charset="UTF-8">
     <title>共通ヘッダー</title>
-
+    <link href="/css/app.css" rel="stylesheet">
 </head>
 <body>
-<nav th:fragment="header" class="navbar navbar-light bg-white mb-4 border-bottom">
+<nav th:fragment="header" class="navbar navbar-light mb-4 border-bottom app-header">
     <div class="container py-2">
         <div class="d-flex flex-wrap align-items-center gap-2 w-100">
-            <a class="navbar-brand mb-0 me-2" href="/reviews">授業レビュー</a>
-            <a class="nav-link px-2" href="/reviews">検索</a>
-            <a class="nav-link px-2" href="/reviews/new">投稿</a>
-            <a class="nav-link px-2" href="/me">マイページ</a>
-            <a href="/logout" class="btn btn-outline-danger btn-sm ms-auto">ログアウト</a>
+            <a class="navbar-brand mb-0 me-2 app-brand" href="/reviews">授業レビュー</a>
+            <a class="nav-link px-2 app-nav-link" href="/reviews" data-nav="/reviews">検索</a>
+            <a class="nav-link px-2 app-nav-link" href="/reviews/new" data-nav="/reviews/new">投稿</a>
+            <a class="nav-link px-2 app-nav-link" href="/me" data-nav="/me">マイページ</a>
+            <a href="/logout" class="btn btn-outline-danger btn-sm ms-auto app-logout">ログアウト</a>
         </div>
     </div>
 </nav>
+<script>
+    (() => {
+        const currentPath = window.location.pathname;
+        const links = Array.from(document.querySelectorAll(".app-nav-link[data-nav]"));
+        let activeLink = null;
+        let longestPrefix = -1;
+
+        for (const link of links) {
+            const prefix = link.dataset.nav || "";
+            if (!prefix) continue;
+            if (currentPath === prefix || currentPath.startsWith(prefix + "/")) {
+                if (prefix.length > longestPrefix) {
+                    longestPrefix = prefix.length;
+                    activeLink = link;
+                }
+            }
+        }
+
+        if (!activeLink && currentPath.startsWith("/reviews")) {
+            activeLink = links.find((link) => link.dataset.nav === "/reviews");
+        }
+
+        if (activeLink) {
+            activeLink.classList.add("active");
+        }
+    })();
+</script>
 </body>
 </html>

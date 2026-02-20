@@ -4,90 +4,65 @@
     <meta charset="UTF-8">
     <title>授業レビュー検索</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .suggest-box {
-            position: absolute;
-            top: calc(100% + 4px);
-            left: 0;
-            right: 0;
-            z-index: 1050;
-        }
-
-        .rating-stars {
-            position: relative;
-            display: inline-block;
-            line-height: 1;
-        }
-
-        .rating-stars-base {
-            color: #d0d0d0;
-        }
-
-        .rating-stars-fill {
-            position: absolute;
-            top: 0;
-            left: 0;
-            overflow: hidden;
-            white-space: nowrap;
-            color: #f59f00;
-        }
-    </style>
+    <link href="/css/app.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body class="app-body">
 
 <div th:replace="fragments/header :: header"></div>
 
 <div class="container py-4">
-    <h1 class="mb-4">検索結果</h1>
+    <h1 class="page-title mb-4">検索結果</h1>
 
-    <form action="/reviews/search" method="get" class="row g-2 align-items-end mb-4">
-        <div class="col-md-4 position-relative">
-            <label class="form-label mb-1">キーワード</label>
-            <input id="keywordInput" type="text" name="keyword" class="form-control"
-                   placeholder="授業名・教員名・学校名"
-                   autocomplete="off"
-                   th:value="${keyword}">
-            <div id="universitySuggestBox" class="list-group suggest-box d-none"></div>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label mb-1">対象</label>
-            <select id="targetSelect" name="target" class="form-select">
-                <option value="all" th:selected="${target} == 'all'">授業名＋教員名＋大学名</option>
-                <option value="course" th:selected="${target} == 'course'">授業名のみ</option>
-                <option value="teacher" th:selected="${target} == 'teacher'">教員名のみ</option>
-                <option value="university" th:selected="${target} == 'university'">学校名のみ</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label mb-1">並び順</label>
-            <select name="sort" class="form-select">
-                <option value="recent" th:selected="${sort} == 'recent'">新しい順</option>
-                <option value="rating" th:selected="${sort} == 'rating'">評価が高い順</option>
-                <option value="likes" th:selected="${sort} == 'likes'">いいねが多い順</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-outline-primary w-100">検索</button>
-        </div>
-    </form>
+    <div class="panel-card mb-4 p-3">
+        <form action="/reviews/search" method="get" class="row g-2 align-items-end mb-0 search-panel">
+            <div class="col-md-4 position-relative">
+                <label class="form-label mb-1">キーワード</label>
+                <input id="keywordInput" type="text" name="keyword" class="form-control"
+                       placeholder="授業名・教員名・学校名"
+                       autocomplete="off"
+                       th:value="${keyword}">
+                <div id="universitySuggestBox" class="list-group suggest-box d-none"></div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">対象</label>
+                <select id="targetSelect" name="target" class="form-select">
+                    <option value="all" th:selected="${target} == 'all'">授業名＋教員名＋大学名</option>
+                    <option value="course" th:selected="${target} == 'course'">授業名のみ</option>
+                    <option value="teacher" th:selected="${target} == 'teacher'">教員名のみ</option>
+                    <option value="university" th:selected="${target} == 'university'">学校名のみ</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label mb-1">並び順</label>
+                <select name="sort" class="form-select">
+                    <option value="recent" th:selected="${sort} == 'recent'">新しい順</option>
+                    <option value="rating" th:selected="${sort} == 'rating'">評価が高い順</option>
+                    <option value="likes" th:selected="${sort} == 'likes'">いいねが多い順</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">検索</button>
+            </div>
+        </form>
+    </div>
 
     <div th:if="${!hasSearched}" class="alert alert-secondary">
         授業名・教員名・学校名を入力して検索すると、レビュー一覧を表示します。
     </div>
 
-    <div th:if="${ratingSummary != null and ratingSummary.totalCount > 0}" class="card mb-4 border-0 shadow-sm">
+    <div th:if="${ratingSummary != null and ratingSummary.totalCount > 0}" class="panel-card mb-4 p-3">
         <div class="card-body">
             <h2 class="h5 mb-2" th:text="${summaryTitle}">評価サマリー</h2>
             <div class="mb-2">
-                <span class="display-6 fw-bold" th:text="${#numbers.formatDecimal(ratingSummary.average, 1, 1)} + ' / 5.0'">4.5 / 5.0</span>
+                <span class="summary-average" th:text="${#numbers.formatDecimal(ratingSummary.average, 1, 1)} + ' / 5.0'">4.5 / 5.0</span>
                 <span class="text-muted ms-2" th:text="'(' + ${ratingSummary.totalCount} + '件)'">(0件)</span>
             </div>
 
-            <div class="mt-3" th:each="row : ${ratingSummary.breakdowns}">
+            <div class="mt-3 rating-row" th:each="row : ${ratingSummary.breakdowns}">
                 <div class="d-flex align-items-center gap-2">
                     <span style="width:48px" th:text="${row.rating} + '★'">5★</span>
-                    <div class="progress flex-grow-1" style="height: 10px;">
-                        <div class="progress-bar bg-warning"
+                    <div class="progress flex-grow-1">
+                        <div class="progress-bar"
                              th:style="'width:' + ${row.percentage} + '%'"></div>
                     </div>
                     <span class="text-muted small" style="width:48px" th:text="${row.count} + '件'">0件</span>
@@ -108,58 +83,58 @@
 
         <div class="row row-cols-1 row-cols-md-2 g-3">
             <div class="col" th:each="r : ${reviews}">
-                <div class="card h-100 shadow-sm">
+                <div class="card h-100 review-card">
                     <div class="card-body">
                         <h5 class="card-title">
                             <a th:href="@{'/reviews/' + ${r.id}}"
                                th:text="${r.courseName}">授業名</a>
                         </h5>
 
-                        <div class="small mb-1"
+                        <div class="small mb-1 meta-text"
                              th:with="displayUniversity=${(r.university != null and !#strings.isEmpty(r.university)) ? r.university : (r.user != null ? r.user.university : null)}"
                              th:if="${displayUniversity != null and !#strings.isEmpty(displayUniversity)}">
                             対象大学:
                             <a th:href="@{/reviews/search(target='university', keyword=${displayUniversity}, sort='recent')}"
                                th:text="${displayUniversity}">大学名</a>
                         </div>
-                        <div class="small mb-1 text-muted"
+                        <div class="small mb-1 meta-text"
                              th:if="${(r.university == null or #strings.isEmpty(r.university)) and (r.user == null or r.user.university == null or #strings.isEmpty(r.user.university))}">
                             対象大学: -
                         </div>
 
-                        <h6 class="card-subtitle mb-2 text-muted">
+                        <h6 class="card-subtitle mb-2 meta-text">
                             教員:
                             <span th:text="${r.teacherName}">先生</span>
                         </h6>
-                        <p class="mb-1 small">
+                        <p class="mb-1 small meta-text">
                             テスト方式:
                             <span th:text="${r.testMethod != null and !#strings.isEmpty(r.testMethod) ? r.testMethod : '-'}">-</span>
                         </p>
-                        <p class="mb-2 small">
+                        <p class="mb-2 small meta-text">
                             出席の取り方:
                             <span th:text="${r.attendanceMethod != null and !#strings.isEmpty(r.attendanceMethod) ? r.attendanceMethod : '-'}">-</span>
                         </p>
 
-                        <div class="small text-muted mb-2"
+                        <div class="small meta-text mb-2"
                              th:if="${r.user != null}">
                             投稿者:
                             <span th:text="${(r.user.nickname != null and !#strings.isEmpty(r.user.nickname)) ? r.user.nickname : 'ユーザー'}">ユーザー</span>
                         </div>
 
-                        <div class="text-muted small mb-2">
+                        <div class="meta-text small mb-2">
                             口コミ投稿日:
                             <span th:if="${r.createdAt != null}"
                                   th:text="${#temporals.format(r.createdAt, 'yyyy/MM/dd HH:mm')}"></span>
                             <span th:if="${r.createdAt == null}">-</span>
                         </div>
 
-                        <div class="mb-1 d-flex align-items-center gap-2">
+                        <div class="mb-2 d-flex align-items-center gap-2">
+                            <span class="rating-chip" th:text="${#numbers.formatDecimal(r.rating, 1, 1)}">4.5</span>
                             <span class="rating-stars" aria-label="rating stars">
                                 <span class="rating-stars-base">★★★★★</span>
                                 <span class="rating-stars-fill" th:style="'width:' + (${r.rating} * 20) + '%'">★★★★★</span>
                             </span>
-                            <span class="text-muted small"
-                                  th:text="'(' + ${#numbers.formatDecimal(r.rating, 1, 1)} + '/5.0)'"></span>
+                            <span class="small meta-text">/ 5.0</span>
                         </div>
 
                         <div class="mb-2" th:if="${r.imagePath != null}">
@@ -171,7 +146,7 @@
                         <div class="mt-3" th:with="commentList=${reviewCommentsMap[r.id]}">
                             <div class="small fw-semibold mb-2">コメント一覧</div>
 
-                            <div class="list-group list-group-flush"
+                            <div class="list-group list-group-flush comment-preview p-1"
                                  th:if="${commentList != null and !#lists.isEmpty(commentList)}">
                                 <div class="list-group-item px-0 py-2 border-0"
                                      th:each="c : ${commentList}">

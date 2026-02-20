@@ -4,39 +4,15 @@
     <meta charset="UTF-8">
     <title>レビュー投稿</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .star-rating {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
-            gap: 0.25rem;
-        }
-
-        .star-rating input {
-            display: none;
-        }
-
-        .star-rating label {
-            font-size: 2rem;
-            color: #d0d0d0;
-            cursor: pointer;
-            line-height: 1;
-        }
-
-        .star-rating label:hover,
-        .star-rating label:hover ~ label,
-        .star-rating input:checked ~ label {
-            color: #f59f00;
-        }
-    </style>
+    <link href="/css/app.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body class="app-body">
 <div th:replace="fragments/header :: header"></div>
 
 <div class="container py-4" style="max-width: 600px;">
-    <h1 class="mb-4">レビュー投稿</h1>
+    <h1 class="page-title mb-4">レビュー投稿</h1>
 
-    <form action="/reviews" method="post" enctype="multipart/form-data">
+    <form action="/reviews" method="post" enctype="multipart/form-data" class="form-card p-4">
         <div class="mb-3">
             <label class="form-label">授業名</label>
             <input type="text" name="courseName" class="form-control" required>
@@ -73,6 +49,7 @@
                 <input type="radio" id="star1" name="rating" value="1">
                 <label for="star1" title="1">★</label>
             </div>
+            <div id="ratingCaption" class="star-rating-caption">選択中: 5.0 / 5.0</div>
         </div>
 
         <div class="mb-3">
@@ -87,5 +64,20 @@
         <a href="/reviews" class="btn btn-secondary ms-2">キャンセル</a>
     </form>
 </div>
+<script>
+    (() => {
+        const radios = Array.from(document.querySelectorAll('input[name="rating"]'));
+        const caption = document.getElementById("ratingCaption");
+        if (!radios.length || !caption) return;
+
+        const update = () => {
+            const selected = radios.find((radio) => radio.checked);
+            caption.textContent = `選択中: ${selected ? selected.value : "5"}.0 / 5.0`;
+        };
+
+        radios.forEach((radio) => radio.addEventListener("change", update));
+        update();
+    })();
+</script>
 </body>
 </html>
